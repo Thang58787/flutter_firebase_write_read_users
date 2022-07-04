@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final dateController = TextEditingController();
-  late final String tempDate;
+  var tempDate;
   int _selectedIndex = 0;
 
   Widget buildUser(User user) => ListTile(
@@ -52,10 +52,10 @@ class _HomePageState extends State<HomePage> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
         child: Column(children: [
-          // const Text(
-          //   'Add an user',
-          //   style: TextStyle(fontSize: 30),
-          // ),
+          const Text(
+            'Add an user',
+            style: TextStyle(fontSize: 30),
+          ),
           const SizedBox(height: 20),
           NameTextField(nameController: nameController),
           const SizedBox(height: 20),
@@ -110,22 +110,25 @@ class _HomePageState extends State<HomePage> {
             final docs = snapshot.data!.docs;
             return SafeArea(
               child: Scaffold(
-                body: Column(
-                  children: [
-                    // const Text(
-                    //   'List of users',
-                    //   style: TextStyle(fontSize: 30),
-                    // ),
-                    Expanded(
-                      child: ListView.builder(
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 15),
+                        child: const Text(
+                          'List of users',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                      ListView.builder(
                         physics: const ClampingScrollPhysics(),
                         // scrollDirection: Axis.vertical,
-                        // shrinkWrap: true,
+                        shrinkWrap: true,
                         itemCount: docs.length,
                         itemBuilder: (_, i) {
                           final data = docs[i].data();
                           String? birthday;
-                    
+                      
                           var timestamp = data['birthday'];
                           if (timestamp == null) {
                             var birthday = 'null';
@@ -133,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                             var dt = DateTime.parse(timestamp.toDate().toString());
                             var birthday = DateFormat('dd/MM/yyyy!').format(dt);
                           }
-                    
+                      
                           return Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 5),
@@ -156,8 +159,8 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -170,6 +173,8 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(166, 24, 127, 211),
+        fixedColor: const Color.fromARGB(255, 243, 175, 113),
         currentIndex: _selectedIndex, //New
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
