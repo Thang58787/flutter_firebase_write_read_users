@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +17,9 @@ class _HomePageState extends State<HomePage> {
   final dateController = TextEditingController();
   var tempDate;
   int _selectedIndex = 0;
+
+  final _pageViewController = PageController();
+  int _activePage = 0;
 
   Widget buildUser(User user) => ListTile(
         leading: CircleAvatar(child: Text('${user.age}')),
@@ -43,6 +46,12 @@ class _HomePageState extends State<HomePage> {
 
     final data = user.toJson();
     await doc.set(data);
+  }
+
+  @override
+  void dispose() {
+    _pageViewController.dispose();
+    super.dispose();
   }
 
   @override
@@ -94,6 +103,7 @@ class _HomePageState extends State<HomePage> {
                   );
 
                   createUser(user);
+                  _showAddToast();
                 },
                 child: const Text('Add')),
           ),
@@ -128,23 +138,24 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (_, i) {
                           final data = docs[i].data();
                           String? birthday;
-                      
+
                           var timestamp = data['birthday'];
                           if (timestamp == null) {
                             var birthday = 'null';
                           } else {
-                            var dt = DateTime.parse(timestamp.toDate().toString());
+                            var dt =
+                                DateTime.parse(timestamp.toDate().toString());
                             var birthday = DateFormat('dd/MM/yyyy!').format(dt);
                           }
-                      
+
                           return Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 5),
                             child: ListTile(
                               tileColor: const Color.fromARGB(102, 45, 96, 104),
                               shape: RoundedRectangleBorder(
-                                side:
-                                    const BorderSide(color: Colors.black, width: 1),
+                                side: const BorderSide(
+                                    color: Colors.black, width: 1),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               title: Text(data['name']),
@@ -172,11 +183,29 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
+      body: PageView(
+        controller: _pageViewController,
+        children: <Widget>[
+          pages.elementAt(0),
+          pages.elementAt(1),
+        ],
+        onPageChanged: (index) {
+          setState(() {
+            _activePage = index;
+          });
+        },
+        // child: Center(
+        //   child: pages.elementAt(_selectedIndex), //New
+        // ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(166, 24, 127, 211),
         fixedColor: const Color.fromARGB(255, 243, 175, 113),
-        currentIndex: _selectedIndex, //New
-        onTap: _onItemTapped,
+        currentIndex: _activePage,
+        onTap: (index) {
+          _pageViewController.animateToPage(index,
+              duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
+        },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -188,11 +217,15 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: pages.elementAt(_selectedIndex), //New
-      ),
     );
   }
+
+  void _showAddToast() => Fluttertoast.showToast(
+        msg: "Added", // message
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        gravity: ToastGravity.BOTTOM,
+      );
 
   TextField buildNameTextField() {
     return TextField(
