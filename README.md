@@ -6,6 +6,5 @@
 | ------------------------------------ | --- |
 
 ## Download APK
-Apk file is at build/app/outputs/flutter-apk/app-release.apk, or you can download with the link below:
-https://drive.google.com/file/d/1o-9jwTZoz6vdAosd-A2OddyMgnd9zBaa/view?usp=sharing
+Apk file is at build/app/outputs/flutter-apk/app-release.apk or app-debug.apk
 
