@@ -96,14 +96,20 @@ class _HomePageState extends State<HomePage> {
             width: 100,
             child: ElevatedButton(
                 onPressed: () {
-                  final user = User(
-                    name: nameController.text,
-                    age: int.parse(ageController.text),
-                    birthday: DateTime.parse(tempDate),
-                  );
+                  if ((ageController.text == '') ||
+                      (tempDate == null) ||
+                      (nameController.text == '')) {
+                    _showAddErrorToast();
+                  } else {
+                    final user = User(
+                      name: nameController.text,
+                      age: int.parse(ageController.text),
+                      birthday: DateTime.parse(tempDate),
+                    );
 
-                  createUser(user);
-                  _showAddToast();
+                    createUser(user);
+                    _showAddToast();
+                  }
                 },
                 child: const Text('Add')),
           ),
@@ -204,7 +210,8 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _activePage,
         onTap: (index) {
           _pageViewController.animateToPage(index,
-              duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.bounceOut);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -264,6 +271,13 @@ class _HomePageState extends State<HomePage> {
           child: const Text('Submit')),
     );
   }
+
+  void _showAddErrorToast() => Fluttertoast.showToast(
+        msg: "Please provide more information", // message
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        gravity: ToastGravity.BOTTOM,
+      );
 }
 
 class AgeTextField extends StatelessWidget {
